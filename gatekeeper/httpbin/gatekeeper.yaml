@@ -28,3 +28,11 @@ resources:
   methods:
   - GET
   white-listed: true
+- uri: /spec.json
+  methods:
+  - GET
+  white-listed: true
+- uri: /flasgger_static/*
+  methods:
+  - GET
+  white-listed: true
