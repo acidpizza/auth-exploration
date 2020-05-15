@@ -1,12 +1,12 @@
 discovery-url: https://keycloak.localhost/auth/realms/myrealm
 client-id: myapp
-client-secret: d7879060-257e-4bc5-9e8a-afbfccd2e302
+client-secret: cdbe9b9a-4467-4c2e-8ada-654673e7883a
 listen: :8443
 enable-refresh-tokens: true
 
-redirection-url: https://httpbin.localhost
+redirection-url: https://httpbin.localhost/
 encryption-key: AgXa7xRcoClDEU0ZDSH4X0XhL5Qy2Z2j
-upstream-url: http://httpbin
+upstream-url: http://httpbin/
 
 enable-self-signed-tls: true
 self-signed-tls-hostnames:

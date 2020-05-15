@@ -618,7 +618,7 @@
       "clientAuthenticatorType": "client-secret",
       "secret": "**********",
       "redirectUris": [
-        "https://httpbin.localhost"
+        "https://httpbin.localhost/*"
       ],
       "webOrigins": [],
       "notBefore": 0,
