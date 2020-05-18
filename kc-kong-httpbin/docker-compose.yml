@@ -1,0 +1,78 @@
+version: '3.8'
+services:
+  traefik:
+    image: 'traefik:v2.2'
+    command:
+    - '--api.insecure=true'
+    - '--providers.docker=true'
+    - '--providers.docker.exposedbydefault=false'
+    - '--entrypoints.web.address=:80'
+    - '--entrypoints.web.http.redirections.entrypoint.to=websecure'
+    - '--entrypoints.web.http.redirections.entrypoint.scheme=https'
+    - '--entrypoints.websecure.address=:443'
+    - '--log.level=DEBUG'
+    ports:
+    - '80:80'
+    - '443:443'
+    - '8080:8080'
+    volumes:
+    # So that Traefik can listen to the Docker events
+    - '/var/run/docker.sock:/var/run/docker.sock:ro'
+    networks:
+      default:
+        aliases:
+        # This allows the other containers to also reach the services through
+        #   this public address (as opposed to using hostnames)
+        - keycloak.localhost
+        - httpbin.localhost
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:10.0.1
+    environment:
+      KEYCLOAK_USER: admin
+      KEYCLOAK_PASSWORD: admin
+      DB_VENDOR: postgres
+      DB_ADDR: keycloak-postgres
+      DB_DATABASE: keycloak
+      DB_USER: keycloak
+      DB_PASSWORD: password
+      DB_SCHEMA: public
+      KEYCLOAK_IMPORT: /etc/kcconfig/realm-export.json
+    volumes:
+    - './keycloak/realm-export.json:/etc/kcconfig/realm-export.json:ro'
+    - './keycloak/https:/etc/x509/https:ro'
+    depends_on:
+    - traefik
+    - keycloak-postgres
+    labels:
+    - 'traefik.enable=true'
+    - 'traefik.tcp.routers.keycloak.rule=HostSNI(`keycloak.localhost`)'
+    - 'traefik.tcp.routers.keycloak.tls.passthrough=true'
+    - 'traefik.tcp.routers.keycloak.entrypoints=websecure'
+    - 'traefik.tcp.services.keycloak.loadbalancer.server.port=8443'
+
+  keycloak-postgres:
+    image: postgres:12
+    environment:
+      POSTGRES_DB: keycloak
+      POSTGRES_USER: keycloak
+      POSTGRES_PASSWORD: password
+
+  httpbin:
+    image: kennethreitz/httpbin
+    command:
+    - 'gunicorn'
+    - '-b=0.0.0.0:8443'
+    - '-k=gevent'
+    - '--certfile=/tmp/https/tls.crt'
+    - '--keyfile=/tmp/https/tls.key'
+    - 'httpbin:app'
+    volumes:
+    - './keycloak/https:/tmp/https/:ro'
+    labels:
+    - 'traefik.enable=true'
+    - 'traefik.tcp.routers.httpbin.rule=HostSNI(`httpbin.localhost`)'
+    - 'traefik.tcp.routers.httpbin.tls.passthrough=true'
+    - 'traefik.tcp.routers.httpbin.entrypoints=websecure'
+    - 'traefik.tcp.services.httpbin.loadbalancer.server.port=8443'
+
