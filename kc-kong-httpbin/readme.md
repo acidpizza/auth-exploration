@@ -21,3 +21,12 @@ Cant seem to get this to work. Anyway, we do not want TLS passthrough as Kong wo
 # Subdomain routing
 
 TODO: Figure out how to do regex / subdomain routing for TLS traffic on Traefik. 
+
+
+# Keycloak
+
+1) Export realm and users
+```
+/opt/jboss/keycloak/bin/standalone.sh -Dkeycloak.migration.action=export -Dkeycloak.migration.provider=singleFile -Dkeycloak.migration.usersExportStrategy=SAME_FILE -Djboss.socket.binding.port-offset=100 -Dkeycloak.migration.file=/tmp/myrealm.json
+```
+

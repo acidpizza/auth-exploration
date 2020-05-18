@@ -20,40 +20,40 @@ services:
     regex_priority: 0
     strip_path: true
     https_redirect_status_code: 426
-#    plugins:
-#    - name: oidc
-#      config:
-#        access_token_header_as_bearer: "no"
-#        access_token_header_name: X-Access-Token
-#        bearer_only: "no"
-#        client_id: kong-c3n
-#        client_secret: 33029ded-8635-4a36-a21f-77371a989377
-#        disable_access_token_header: "no"
-#        disable_id_token_header: "no"
-#        disable_userinfo_header: "no"
-#        discovery: https://keycloak.localhost/auth/realms/auth-demo/.well-known/openid-configuration
-#        filters: null
-#        id_token_header_name: X-ID-Token
-#        ignore_auth_filters: ""
-#        introspection_endpoint: https://keycloak.localhost/auth/realms/auth-demo/protocol/openid-connect/token/introspect
-#        introspection_endpoint_auth_method: null
-#        logout_path: /logout
-#        realm: kong
-#        recovery_page_path: null
-#        redirect_after_logout_uri: /
-#        redirect_uri: null
-#        response_type: code
-#        revoke_tokens_on_logout: "no"
-#        scope: openid
-#        session_secret: null
-#        ssl_verify: "no"
-#        timeout: null
-#        token_endpoint_auth_method: client_secret_post
-#        unauth_action: auth
-#        userinfo_header_name: X-USERINFO
-#      enabled: true
-#      protocols:
-#      - grpc
-#      - grpcs
-#      - http
-#      - https
+    plugins:
+    - name: oidc
+      config:
+        access_token_header_as_bearer: "no"
+        access_token_header_name: X-Access-Token
+        bearer_only: "no"
+        client_id: myapp
+        client_secret: 077d1c9a-4b3c-4521-9311-94f5610c6ed7
+        disable_access_token_header: "no"
+        disable_id_token_header: "no"
+        disable_userinfo_header: "no"
+        discovery: https://keycloak.localhost/auth/realms/myrealm/.well-known/openid-configuration
+        filters: null
+        id_token_header_name: X-ID-Token
+        ignore_auth_filters: ""
+        introspection_endpoint: https://keycloak.localhost/auth/realms/myrealm/protocol/openid-connect/token/introspect
+        introspection_endpoint_auth_method: null
+        logout_path: /logout
+        realm: myrealm
+        recovery_page_path: null
+        redirect_after_logout_uri: /
+        redirect_uri: null
+        response_type: code
+        revoke_tokens_on_logout: "no"
+        scope: openid
+        session_secret: null
+        ssl_verify: "no"
+        timeout: null
+        token_endpoint_auth_method: client_secret_post
+        unauth_action: auth
+        userinfo_header_name: X-USERINFO
+      enabled: true
+      protocols:
+      - grpc
+      - grpcs
+      - http
+      - https

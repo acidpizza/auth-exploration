@@ -40,7 +40,10 @@ services:
       KEYCLOAK_IMPORT: /etc/kcconfig/realm-export.json
     volumes:
     - './keycloak/realm-export.json:/etc/kcconfig/realm-export.json:ro'
+    - './keycloak/myrealm.json:/etc/kcconfig/myrealm.json:ro'
     - './keycloak/https:/etc/x509/https:ro'
+    command:
+    - '-b 0.0.0.0 -Dkeycloak.migration.action=import -Dkeycloak.migration.provider=singleFile -Dkeycloak.migration.strategy=OVERWRITE_EXISTING -Dkeycloak.migration.file=/etc/kcconfig/myrealm.json'
     depends_on:
     - traefik
     - keycloak-postgres
