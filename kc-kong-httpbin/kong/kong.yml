@@ -12,6 +12,7 @@ services:
   - hosts:
     - httpbin.kong.localhost
     id: 7362fab4-84aa-4cb3-910c-adc3e3608762
+    name: httpbin_route
     path_handling: v0
     preserve_host: false
     protocols:
@@ -27,7 +28,7 @@ services:
         access_token_header_name: X-Access-Token
         bearer_only: "no"
         client_id: myapp
-        client_secret: 077d1c9a-4b3c-4521-9311-94f5610c6ed7
+        client_secret: 6941762d-a795-4300-ba97-aa736845075a
         disable_access_token_header: "no"
         disable_id_token_header: "no"
         disable_userinfo_header: "no"
