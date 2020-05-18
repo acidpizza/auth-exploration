@@ -7,6 +7,9 @@
 - Route to Kong 8443: Kong termination. See Kong cert.
 
 2) TLS passthrough for Kong: See App cert.
+
+https://konghq.com/blog/tcp-stream-support-kong/
+
 - Route to Kong 5555, Setup Kong Stream Listen on 5555
 - Order is important. snis must come before protocols.
 ```

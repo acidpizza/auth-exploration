@@ -162,3 +162,15 @@ services:
     - 'traefik.tcp.routers.httpbin.entrypoints=websecure'
     - 'traefik.tcp.services.httpbin.loadbalancer.server.port=8443'
 
+  deck:
+    # To declaratively configure Kong
+    image: hbagdi/deck
+    depends_on:
+    - kong-db
+    volumes:
+    - ./kong:/home/deckuser
+    # NOTE: This is a quick hack because depends_on: kong is not reliable as the service is expected to go up and down during migration
+    # So we just sleep before trying to configure Kong
+    entrypoint: /bin/sh
+    command: -c "sleep 40 && deck --kong-addr http://kong:8001 sync -s /home/deckuser/kong.yml"
+
