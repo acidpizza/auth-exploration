@@ -24,7 +24,6 @@ services:
         # This allows the other containers to also reach the services through
         # this public address (as opposed to using hostnames)
         - keycloak.localhost
-        - httpbin.localhost
 
   keycloak:
     image: quay.io/keycloak/keycloak:10.0.1
@@ -37,9 +36,9 @@ services:
       DB_USER: keycloak
       DB_PASSWORD: password
       DB_SCHEMA: public
-      KEYCLOAK_IMPORT: /etc/kcconfig/realm-export.json
+      #KEYCLOAK_IMPORT: /etc/kcconfig/realm-export.json
     volumes:
-    - './keycloak/realm-export.json:/etc/kcconfig/realm-export.json:ro'
+    #- './keycloak/realm-export.json:/etc/kcconfig/realm-export.json:ro'
     - './keycloak/myrealm.json:/etc/kcconfig/myrealm.json:ro'
     - './keycloak/https:/etc/x509/https:ro'
     command:
@@ -147,24 +146,6 @@ services:
     stdin_open: true
     tty: true
 
-  httpbin:
-    image: kennethreitz/httpbin
-    command:
-    - 'gunicorn'
-    - '-b=0.0.0.0:8443'
-    - '-k=gevent'
-    - '--certfile=/tmp/https/tls.crt'
-    - '--keyfile=/tmp/https/tls.key'
-    - 'httpbin:app'
-    volumes:
-    - './httpbin/https:/tmp/https/:ro'
-    labels:
-#    - 'traefik.enable=true'
-    - 'traefik.tcp.routers.httpbin.rule=HostSNI(`httpbin.localhost`)'
-    - 'traefik.tcp.routers.httpbin.tls.passthrough=true'
-    - 'traefik.tcp.routers.httpbin.entrypoints=websecure'
-    - 'traefik.tcp.services.httpbin.loadbalancer.server.port=8443'
-
   deck:
     # To declaratively configure Kong
     image: hbagdi/deck
@@ -176,4 +157,44 @@ services:
     # So we just sleep before trying to configure Kong
     entrypoint: /bin/sh
     command: -c "sleep 40 && deck --kong-addr http://kong:8001 sync -s /home/deckuser/kong.yml"
+
+  httpbin:
+    image: kennethreitz/httpbin
+    command:
+    - 'gunicorn'
+    - '-k=gevent'
+    - '-b=0.0.0.0:80'
+#    - '-b=0.0.0.0:8443'
+#    - '--certfile=/tmp/https/tls.crt'
+#    - '--keyfile=/tmp/https/tls.key'
+    - 'httpbin:app'
+    volumes:
+    - './httpbin/https:/tmp/https/:ro'
+#    labels:
+#    - 'traefik.enable=true'
+#    - 'traefik.tcp.routers.httpbin.rule=HostSNI(`httpbin.localhost`)'
+#    - 'traefik.tcp.routers.httpbin.tls.passthrough=true'
+#    - 'traefik.tcp.routers.httpbin.entrypoints=websecure'
+#    - 'traefik.tcp.services.httpbin.loadbalancer.server.port=8443'
+
+  httpbin-opa:
+    image: openpolicyagent/opa:0.19.2-rootless
+    volumes:
+    - './opa/:/tmp/opa/:ro'
+    command:
+    - "run"
+    - "--server"
+    - "--log-level=debug"
+    - "--log-format=json-pretty"
+    - "--set=decision_logs.console=true"
+    - "/tmp/opa"
+
+  httpbin-openresty:
+    image: openresty/openresty:1.15.8.3-2-buster-fat
+    volumes:
+    - './openresty/conf.d/:/etc/nginx/conf.d:ro'
+    - './httpbin/https:/tmp/https/:ro'
+    depends_on:
+    - httpbin-opa
+    entrypoint: sh -c 'opm get ledgetech/lua-resty-http xiedacon/lua-pretty-json chunpu/lua-min-url && exec /usr/bin/openresty -g "daemon off;"'
 
