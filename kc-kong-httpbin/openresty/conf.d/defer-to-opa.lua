@@ -2,7 +2,6 @@ local json = require "pretty.json"
 local http = require "resty.http"
 local Url = require "min.url"
 
-
 -- splits a string s by /
 -- "/" => {} (empty table)
 -- "/api" => ["api"]
@@ -16,27 +15,25 @@ local function split(s)
    return out
 end
 
-
 -- parse the necessary information out of the request
 local path = Url.parse(ngx.var.uri).pathname
 local path_split = split(path)
 
 local auth_header = ngx.var.http_Authorization
+--[[
 if auth_header then
-   ngx.log(ngx.STDERR, 'FOUND AUTH HEADER!')
+--   ngx.log(ngx.STDERR, 'FOUND AUTH HEADER!' .. auth_header)
    _, _, token = string.find(auth_header, "Bearer%s+(.+)")
-else
-   ngx.log(ngx.STDERR, 'CANNOT FIND AUTH HEADER!')
+  token = auth_header
 end
-
-ngx.log(ngx.STDERR, 'What is ' .. ngx.var.http_user_agent)
-
+--]]
 
 -- form specs for opa to make decision
 local request_specs = {
    method = ngx.req.get_method(),
    path = path_split,
-   token = token,
+   token = auth_header,
+--   token = token,
 }
 
 -- make the request out to opa

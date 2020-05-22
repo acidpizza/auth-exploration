@@ -24,8 +24,8 @@ services:
     plugins:
     - name: oidc
       config:
-        access_token_header_as_bearer: "no"
-        access_token_header_name: X-Access-Token
+        access_token_header_as_bearer: "yes"
+        access_token_header_name: Authorization
         bearer_only: "no"
         client_id: myapp
         client_secret: 6941762d-a795-4300-ba97-aa736845075a

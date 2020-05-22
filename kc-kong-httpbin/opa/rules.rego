@@ -2,10 +2,10 @@ package authz
 
 import input
 
-# Helper to get the token payload.
-#token = {"payload": payload} {
-#  [header, payload, signature] := io.jwt.decode(input.token)
-#}
+# Rule to generate token object with member payload field.
+token = {"payload": payload} {
+  [header, payload, signature] := io.jwt.decode(input.token)
+}
 
 default allow = false
 #default allow = true
@@ -40,9 +40,5 @@ allow {
 allow {
   input.path == ["anything"]
   input.method == "GET"
-#  token.payload.preferred_user == "user1"
+  token.payload.preferred_username == "user1"
 }
-
-#test[myvar] {
-#  myvar:=token.payload
-#}
