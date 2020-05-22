@@ -5,8 +5,9 @@ local Url = require "min.url"
 
 -- splits a string s by /
 -- "/" => {} (empty table)
--- "/api" => {"api"}
--- "/api/" => {"api"}
+-- "/api" => ["api"]
+-- "/api/" => ["api"]
+-- "/api/one" => ["api", "one"]
 local function split(s)
    local out = {}
    for w in s:gmatch("([^/]+)") do
@@ -22,8 +23,14 @@ local path_split = split(path)
 
 local auth_header = ngx.var.http_Authorization
 if auth_header then
+   ngx.log(ngx.STDERR, 'FOUND AUTH HEADER!')
    _, _, token = string.find(auth_header, "Bearer%s+(.+)")
+else
+   ngx.log(ngx.STDERR, 'CANNOT FIND AUTH HEADER!')
 end
+
+ngx.log(ngx.STDERR, 'What is ' .. ngx.var.http_user_agent)
+
 
 -- form specs for opa to make decision
 local request_specs = {

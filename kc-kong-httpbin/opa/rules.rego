@@ -3,9 +3,9 @@ package authz
 import input
 
 # Helper to get the token payload.
-token = {"payload": payload} {
-  [header, payload, signature] := io.jwt.decode(input.token)
-}
+#token = {"payload": payload} {
+#  [header, payload, signature] := io.jwt.decode(input.token)
+#}
 
 default allow = false
 #default allow = true
@@ -18,9 +18,9 @@ allow {
   input.method == "GET"
 }
 
-# Permit "/flasgger_static/swagger-ui.css"
+# Permit "/flasgger_static/*"
 allow {
-  input.path == ["flasgger_static", "swagger-ui.css"]
+  input.path[0] == "flasgger_static"
   input.method == "GET"
 }
 
@@ -30,11 +30,17 @@ allow {
   input.method == "GET"
 }
 
+# Permit "/headers"
+allow {
+  input.path == ["headers"]
+  input.method == "GET"
+}
+
 # Permit "/anything on user1"
 allow {
   input.path == ["anything"]
   input.method == "GET"
-  #token.payload.user == "user1"
+#  token.payload.preferred_user == "user1"
 }
 
 #test[myvar] {
