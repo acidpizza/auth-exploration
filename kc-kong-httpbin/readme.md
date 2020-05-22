@@ -2,6 +2,11 @@
 
 ![Diagram](./diagram.png)
 
+# Credentials
+- Keycloak: 
+  - admin:admin
+  - user1:password
+  - user2:password
 
 # See App Cert
 
